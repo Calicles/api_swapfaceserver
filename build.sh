@@ -1,0 +1,1 @@
+g++ -std=c++11 -o main src/SwapFaceServer.cpp -Iinclude -lcpprest -lssl -lcrypto -lboost_system -lpthread
