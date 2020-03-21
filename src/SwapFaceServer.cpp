@@ -20,16 +20,16 @@ using namespace concurrency::streams;
 
 class SwapFaceServer {
 private:
-    static void handle_get(http_request message);
-    static void handle_put(http_request message);
-    static void handle_post(http_request message);
-    static void handle_delete(http_request message);
+    void handle_get(http_request message);
+    void handle_put(http_request message);
+    void handle_post(http_request message);
+    void handle_delete(http_request message);
 
     http_listener m_listener;
 
 public:
     SwapFaceServer();
-    SwapFaceServer(utility::string_t url);
+    SwapFaceServer(string_t url);
     ~SwapFaceServer();
 
     pplx::task<void> open() { return m_listener.open(); }
@@ -41,60 +41,113 @@ SwapFaceServer::SwapFaceServer() {
 
 }
 
-SwapFaceServer::SwapFaceServer(utility::string_t url) {
-
+SwapFaceServer::SwapFaceServer(utility::string_t url) : m_listener(url) {
+    m_listener.support(methods::GET, std::bind(&SwapFaceServer::handle_get, this, std::placeholders::_1));
+    m_listener.support(methods::POST, std::bind(&SwapFaceServer::handle_post, this, std::placeholders::_1));
 }
 
 SwapFaceServer::~SwapFaceServer(){}
 
-void handle_get(http_request message) {
+void SwapFaceServer::handle_get(http_request message) {
+    ucout << utility::string_t(U("Have a request get !!!")) << std::endl;
+    ucout << message.to_string() << std::endl;
+    auto paths = uri::split_path(uri::decode(message.relative_uri().path()));
+
+    utility::string_t rep;
+
+    std::map<string_t, string_t> query = 
+        uri::split_query(uri::decode(message.request_uri().query()));
+
+    auto index = query.find(U("index"));
+
+    // handle one image, the second by index in uri
+    if (index != query.end() && !index->second.empty()) {
+        ucout << index->second << std::endl;
+    
+    // handle two images to swap
+    } else {
+        rep = U("Error");
+        ucout << U("handle nothing") << std::endl;
+    }
+    rep = U("Hello");
+    message.reply(status_codes::OK, rep);
+    return;
+}
+
+void SwapFaceServer::handle_put(http_request message) {
 
 }
 
-void handle_put(http_request message) {
+void SwapFaceServer::handle_post(http_request message) {
+    ucout << message.to_string() << std::endl;
 
+    auto paths = uri::split_path(uri::decode(message.relative_uri().path()));
+
+    if (paths.empty()) {
+        message.reply(status_codes::NotFound);
+        return;
+    }
+
+    /* in view: 
+    fetch(URL)
+  .then(res=>{return res.blob()})
+  .then(blob=>{
+    var img = URL.createObjectURL(blob);
+    // Do whatever with the img
+    document.getElementById('img').setAttribute('src', img);
+  })
+  */
+    std::map<string_t, string_t> query = 
+        uri::split_query(uri::decode(message.request_uri().query()));
+
+    auto index = query.find(U("index"));
+
+    return;
 }
 
-void handle_post(http_request message) {
-
-}
-
-void handle_delete(http_request message) {
+void SwapFaceServer::handle_delete(http_request message) {
 
 }
 
 std::unique_ptr<SwapFaceServer>g_http;
 
+void on_initialize(const string_t& address)
+{
+    // Build our listener's URI from the configured address and the hard-coded path "swapFace"
+
+    uri_builder uri(address);
+    uri.append_path(U("swapFace"));
+
+    auto addr = uri.to_uri().to_string();
+
+    g_http = std::unique_ptr<SwapFaceServer>(new SwapFaceServer(addr));
+    g_http->open().wait();
+
+    ucout << utility::string_t(U("Listening for request at : ")) << addr << std::endl;
+
+    return;
+}
+
+void on_shutdown() {
+    g_http->close().wait();
+
+    ucout << utility::string_t(U("Server closed")) << std::endl;
+    return;
+}
+
+
 int main (int argc, char *argv[]) {
-    //utility::string_t port= U("34568");
-    //utility::string_t adress = U("http://localhost:");
+    utility::string_t port= U("34568");
+    utility::string_t address = U("http://localhost:");
+    address.append(port);
 
-    auto fileStream = std::make_shared<ostream>();
+    on_initialize(address);
 
-    pplx::task<void> requestTask = fstream::open_ostream(U("results.html"))
-        .then([=] (ostream outFile) {
-            *fileStream = outFile;
+    std::cout << "Press ENTER to exit." << std::endl;
+    std::string line;
+    std::getline(std::cin, line);
 
-            http_client client(U("http://www.bing.com/"));
+    on_shutdown();
 
-            uri_builder builder(U("/search"));
-            builder.append_query(U("q"), U("cpprestsdk github"));
-            return client.request(methods::GET, builder.to_string());
-        })
-        .then([=] (http_response response) {
-            printf("Received response status code:%u\n", response.status_code());
-
-            return response.body().read_to_end(fileStream->streambuf());
-        })
-        .then([=](size_t) {
-            return fileStream->close();
-        });
-
-        try {
-            requestTask.wait();
-        }
-        catch (const std::exception &e) {
-            printf("Error exception:%s\n", e.what());
-        }
-        return 0;
+    return 0;
 }
