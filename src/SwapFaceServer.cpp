@@ -24,6 +24,7 @@ private:
     void handle_put(http_request message);
     void handle_post(http_request message);
     void handle_delete(http_request message);
+    void handle_options(http_request message);
 
     http_listener m_listener;
 
@@ -44,9 +45,21 @@ SwapFaceServer::SwapFaceServer() {
 SwapFaceServer::SwapFaceServer(utility::string_t url) : m_listener(url) {
     m_listener.support(methods::GET, std::bind(&SwapFaceServer::handle_get, this, std::placeholders::_1));
     m_listener.support(methods::POST, std::bind(&SwapFaceServer::handle_post, this, std::placeholders::_1));
+    m_listener.support(methods::OPTIONS, std::bind(&SwapFaceServer::handle_options, this, std::placeholders::_1));
 }
 
 SwapFaceServer::~SwapFaceServer(){}
+
+  void SwapFaceServer::handle_options(http_request message)
+  {
+    http_response response(status_codes::OK);
+    response.headers().add(U("Allow"), U("GET, POST, OPTIONS"));
+    response.headers().add(U("Access-Control-Allow-Origin"), U("*"));
+    response.headers().add(U("Access-Control-Allow-Methods"), U("GET, POST, OPTIONS"));
+    response.headers().add(U("Access-Control-Allow-Headers"), U("Content-Type"));
+    ucout << string_t(U("handle request OPTIONS")) << std::endl;
+    message.reply(response);
+  }
 
 void SwapFaceServer::handle_get(http_request message) {
     ucout << utility::string_t(U("Have a request get !!!")) << std::endl;
@@ -70,7 +83,11 @@ void SwapFaceServer::handle_get(http_request message) {
         ucout << U("handle nothing") << std::endl;
     }
     rep = U("Hello");
-    message.reply(status_codes::OK, rep);
+    
+    http_response response(status_codes::OK);
+    response.headers().add(U("Access-Control-Allow-Origin"), U("*"));
+    response.set_body(string_t(U("hello world")));
+    message.reply(response);
     return;
 }
 
