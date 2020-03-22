@@ -97,14 +97,6 @@ void SwapFaceServer::handle_put(http_request message) {
 
 void SwapFaceServer::handle_post(http_request message) {
     ucout << message.to_string() << std::endl;
-
-    auto paths = uri::split_path(uri::decode(message.relative_uri().path()));
-
-    if (paths.empty()) {
-        message.reply(status_codes::NotFound);
-        return;
-    }
-
     /* in view: 
     fetch(URL)
   .then(res=>{return res.blob()})
@@ -112,13 +104,23 @@ void SwapFaceServer::handle_post(http_request message) {
     var img = URL.createObjectURL(blob);
     // Do whatever with the img
     document.getElementById('img').setAttribute('src', img);
-  })
-  */
-    std::map<string_t, string_t> query = 
-        uri::split_query(uri::decode(message.request_uri().query()));
-
-    auto index = query.find(U("index"));
-
+  })*/
+  ucout << "1" << std::endl;
+         json::value temp;
+    message.extract_string()       //extracts the request content into a json
+        .then([=](string_t json)
+        {
+            json::value v = json::value::parse(json);
+            ucout << v[U("index")] << std::endl;
+        });
+    ucout << "2" << std::endl;
+    http_response response(status_codes::OK);
+    response.headers().add(U("Allow"), U("GET, POST, OPTIONS"));
+    response.headers().add(U("Access-Control-Allow-Origin"), U("*"));
+    response.headers().add(U("Access-Control-Allow-Methods"), U("GET, POST, OPTIONS"));
+    response.headers().add(U("Access-Control-Allow-Headers"), U("Content-Type"));
+    response.set_body("hello");
+    message.reply(response);
     return;
 }
 
