@@ -1,42 +1,16 @@
-#include <cpprest/http_client.h>
 #include <cpprest/filestream.h>
 #include <cpprest/http_listener.h>              // HTTP server
 #include <cpprest/json.h>                       // JSON library
 #include <cpprest/uri.h>                        // URI library
-#include <cpprest/ws_client.h>                  // WebSocket client
-#include <cpprest/containerstream.h>            // Async streams backed by STL containers
-#include <cpprest/interopstream.h>              // Bridges for integrating Async streams with STL and WinRT streams
-#include <cpprest/rawptrstream.h>               // Async streams backed by raw pointer to memory
-#include <cpprest/producerconsumerstream.h> 
+
+#include "SwapFaceServer.h"
+#include "faceSwapUtils.h"
 
 using namespace web;
 using namespace http;
 using namespace utility;
 using namespace http::experimental::listener;
-
 using namespace web::http;                  // Common HTTP functionality
-using namespace web::http::client;          // HTTP client features
-using namespace concurrency::streams; 
-
-class SwapFaceServer {
-private:
-    void handle_get(http_request message);
-    void handle_put(http_request message);
-    void handle_post(http_request message);
-    void handle_delete(http_request message);
-    void handle_options(http_request message);
-
-    http_listener m_listener;
-
-public:
-    SwapFaceServer();
-    SwapFaceServer(string_t url);
-    ~SwapFaceServer();
-
-    pplx::task<void> open() { return m_listener.open(); }
-    pplx::task<void> close() { return m_listener.close(); }
-
-};
 
 SwapFaceServer::SwapFaceServer() {
 
@@ -62,28 +36,6 @@ SwapFaceServer::~SwapFaceServer(){}
   }
 
 void SwapFaceServer::handle_get(http_request message) {
-    ucout << utility::string_t(U("Have a request get !!!")) << std::endl;
-    ucout << message.to_string() << std::endl;
-    auto paths = uri::split_path(uri::decode(message.relative_uri().path()));
-
-    utility::string_t rep;
-
-    std::map<string_t, string_t> query = 
-        uri::split_query(uri::decode(message.request_uri().query()));
-
-    auto index = query.find(U("index"));
-
-    // handle one image, the second by index in uri
-    if (index != query.end() && !index->second.empty()) {
-        ucout << index->second << std::endl;
-    
-    // handle two images to swap
-    } else {
-        rep = U("Error");
-        ucout << U("handle nothing") << std::endl;
-    }
-    rep = U("Hello");
-    
     http_response response(status_codes::OK);
     response.headers().add(U("Access-Control-Allow-Origin"), U("*"));
     response.set_body(string_t(U("hello world")));
@@ -97,30 +49,30 @@ void SwapFaceServer::handle_put(http_request message) {
 
 void SwapFaceServer::handle_post(http_request message) {
     ucout << message.to_string() << std::endl;
-    /* in view: 
-    fetch(URL)
-  .then(res=>{return res.blob()})
-  .then(blob=>{
-    var img = URL.createObjectURL(blob);
-    // Do whatever with the img
-    document.getElementById('img').setAttribute('src', img);
-  })*/
-  ucout << "1" << std::endl;
-         json::value temp;
+    
+    json::value temp;
+
     message.extract_string()       //extracts the request content into a json
         .then([=](string_t json)
         {
             json::value v = json::value::parse(json);
-            ucout << v[U("index")] << std::endl;
-        });
-    ucout << "2" << std::endl;
-    http_response response(status_codes::OK);
-    response.headers().add(U("Allow"), U("GET, POST, OPTIONS"));
-    response.headers().add(U("Access-Control-Allow-Origin"), U("*"));
-    response.headers().add(U("Access-Control-Allow-Methods"), U("GET, POST, OPTIONS"));
-    response.headers().add(U("Access-Control-Allow-Headers"), U("Content-Type"));
-    response.set_body("hello");
-    message.reply(response);
+            json::array jsonArray = v[U("image")].as_array();
+            int size = jsonArray.size();
+            std::vector<double> vec(size);
+
+            for (int i = 0; i < size; i++) {
+                vec[0] = jsonArray[0].as_double();
+            }
+            ucout << v[U("image")] << std::endl;
+
+            http_response response(status_codes::OK);
+            response.headers().add(U("Allow"), U("GET, POST, OPTIONS"));
+            response.headers().add(U("Access-Control-Allow-Origin"), U("*"));
+            response.headers().add(U("Access-Control-Allow-Methods"), U("GET, POST, OPTIONS"));
+            response.headers().add(U("Access-Control-Allow-Headers"), U("Content-Type"));
+            response.set_body("hello");
+            message.reply(response);
+        }).wait();
     return;
 }
 
