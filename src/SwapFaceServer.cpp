@@ -4,7 +4,7 @@
 #include <cpprest/uri.h>                        // URI library
 
 #include "SwapFaceServer.h"
-#include "faceSwapUtils.h"
+#include "FaceSwapper.h"
 
 using namespace web;
 using namespace http;
@@ -51,6 +51,7 @@ void SwapFaceServer::handle_post(http_request message) {
     ucout << message.to_string() << std::endl;
     
     json::value temp;
+    FaceSwapper swapper;
 
     message.extract_string()       //extracts the request content into a json
         .then([=](string_t json)
@@ -58,21 +59,24 @@ void SwapFaceServer::handle_post(http_request message) {
             json::value v = json::value::parse(json);
             json::array jsonArray = v[U("image")].as_array();
             int size = jsonArray.size();
-            std::vector<double> vec(size);
+            std::vector<uint8_t> vec(size);
 
             for (int i = 0; i < size; i++) {
-                vec[0] = jsonArray[0].as_double();
+                vec[0] = jsonArray[0].as_integer();
             }
             ucout << v[U("image")] << std::endl;
 
-            http_response response(status_codes::OK);
-            response.headers().add(U("Allow"), U("GET, POST, OPTIONS"));
-            response.headers().add(U("Access-Control-Allow-Origin"), U("*"));
-            response.headers().add(U("Access-Control-Allow-Methods"), U("GET, POST, OPTIONS"));
-            response.headers().add(U("Access-Control-Allow-Headers"), U("Content-Type"));
-            response.set_body("hello");
-            message.reply(response);
         }).wait();
+
+    swapper.writeImg();
+
+    http_response response(status_codes::OK);
+    response.headers().add(U("Allow"), U("GET, POST, OPTIONS"));
+    response.headers().add(U("Access-Control-Allow-Origin"), U("*"));
+    response.headers().add(U("Access-Control-Allow-Methods"), U("GET, POST, OPTIONS"));
+    response.headers().add(U("Access-Control-Allow-Headers"), U("Content-Type"));
+    response.set_body("hello");
+    message.reply(response);
     return;
 }
 
