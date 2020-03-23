@@ -59,15 +59,18 @@ void SwapFaceServer::handle_post(http_request message) {
             json::value v = json::value::parse(json);
             json::array jsonArray = v[U("image")].as_array();
             int size = jsonArray.size();
-            this->bytes.reserve(size);
+            this->m_image_bytes.reserve(size);
+            this->imgWidth = v[U("imageWidth")].as_integer();
+            this->imgHeight = v[U("imageHeight")].as_integer();
+            ucout <<  this->imgWidth << " " << this->imgHeight << std::endl;
 
             for (int i = 0; i < size; i++) {
-                this->bytes.push_back(jsonArray[0].as_integer());
+                this->m_image_bytes.push_back(jsonArray[0].as_integer());
             }
             //ucout << v[U("image")] << std::endl;
 
         }).wait();
-    swapper.writeImg(this->bytes);
+    swapper.writeImg(this->m_image_bytes);
 
     http_response response(status_codes::OK);
     response.headers().add(U("Allow"), U("GET, POST, OPTIONS"));
