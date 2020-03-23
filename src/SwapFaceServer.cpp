@@ -1,7 +1,9 @@
 #include <cpprest/filestream.h>
 #include <cpprest/http_listener.h>              // HTTP server
 #include <cpprest/json.h>                       // JSON library
-#include <cpprest/uri.h>                        // URI library
+#include <cpprest/uri.h>
+
+#include <vector>                     // URI library
 
 #include "SwapFaceServer.h"
 #include "FaceSwapper.h"
@@ -13,7 +15,6 @@ using namespace http::experimental::listener;
 using namespace web::http;                  // Common HTTP functionality
 
 SwapFaceServer::SwapFaceServer() {
-
 }
 
 SwapFaceServer::SwapFaceServer(utility::string_t url) : m_listener(url) {
@@ -51,7 +52,6 @@ void SwapFaceServer::handle_post(http_request message) {
     //ucout << message.to_string() << std::endl;
     
     json::value temp;
-    FaceSwapper swapper;
 
     message.extract_string()       //extracts the request content into a json
         .then([=](string_t json)
@@ -65,12 +65,13 @@ void SwapFaceServer::handle_post(http_request message) {
             ucout <<  this->imgWidth << " " << this->imgHeight << std::endl;
 
             for (int i = 0; i < size; i++) {
-                this->m_image_bytes.push_back(jsonArray[0].as_integer());
+                this->m_image_bytes.push_back(jsonArray[i].as_integer());
             }
             //ucout << v[U("image")] << std::endl;
 
         }).wait();
-    swapper.writeImg(this->m_image_bytes);
+    FaceSwapper swapper(this->imgHeight, this->imgWidth, this->m_image_bytes);
+    //swapper.writeImg();
 
     http_response response(status_codes::OK);
     response.headers().add(U("Allow"), U("GET, POST, OPTIONS"));

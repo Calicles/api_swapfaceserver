@@ -4,19 +4,21 @@
 #include <opencv2/core.hpp>
 #include <opencv2/core/mat.hpp>
 
+#include <vector>
+
 
 class FaceSwapper {
 private:
+    void vectorToMat(const std::vector<char> &dataIn, cv::Mat &matOut);
 
     cv::Mat m_mat;
 
-
 public:
-    FaceSwapper();
+    FaceSwapper(int row, int col, const std::vector<char> &data);
     ~FaceSwapper();
 
-    void createJPGFrom(const std::vector<uint8_t> &bytes);
-    void writeImg(std::vector<uint8_t> &bytes);
+    void createJPGFrom(const std::vector<char> &bytes);
+    void writeImg();
 
 };
 
