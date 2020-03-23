@@ -12,6 +12,7 @@ private:
     void handle_options(web::http::http_request message);
 
     web::http::experimental::listener::http_listener m_listener;
+    std::vector<uint8_t> bytes;
 
 public:
     SwapFaceServer();

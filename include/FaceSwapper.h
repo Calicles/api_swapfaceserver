@@ -16,7 +16,7 @@ public:
     ~FaceSwapper();
 
     void createJPGFrom(const std::vector<uint8_t> &bytes);
-    void writeImg();
+    void writeImg(std::vector<uint8_t> &bytes);
 
 };
 

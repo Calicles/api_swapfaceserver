@@ -11,6 +11,6 @@ void FaceSwapper::createJPGFrom(const std::vector<uint8_t> &bytes) {
 
 }
 
-void FaceSwapper::writeImg() {
-    std::cout << "it work" << std::endl;
+void FaceSwapper::writeImg(std::vector<uint8_t> &bytes) {
+    std::cout << bytes.size() << std::endl;
 }
