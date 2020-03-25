@@ -1,0 +1,7 @@
+[
+{
+  "directory": "/home/antoine/dev/c++Appli/rest/API_swapFace/build",
+  "command": "/bin/g++-8   -isystem /usr/local/include/opencv4  -g   -std=gnu++11 -o CMakeFiles/face.dir/src/FaceSwapper.cpp.o -c /home/antoine/dev/c++Appli/rest/API_swapFace/src/FaceSwapper.cpp",
+  "file": "/home/antoine/dev/c++Appli/rest/API_swapFace/src/FaceSwapper.cpp"
+}
+]
