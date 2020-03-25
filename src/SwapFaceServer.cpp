@@ -8,6 +8,7 @@
 
 #include "SwapFaceServer.h"
 #include "FaceSwapper.h"
+#include "faceswap.hpp"
 
 using namespace web;
 using namespace http;
@@ -53,7 +54,7 @@ void SwapFaceServer::handle_post(http_request message) {
     //ucout << message.to_string() << std::endl;
     
     json::value temp;
-
+/*
     message.extract_string()       //extracts the request content into a json
         .then([=](string_t json)
         {
@@ -78,6 +79,14 @@ void SwapFaceServer::handle_post(http_request message) {
     if (!swapper.process_swap()) {
 
     }
+    */
+    ucout << "in before" << std::endl;
+    pplx::task<void> task([] () {
+        process();
+        ucout << "in after" << std::endl;
+
+    });
+    task.get();
 
     http_response response(status_codes::OK);
     response.headers().add(U("Allow"), U("GET, POST, OPTIONS"));
@@ -118,7 +127,6 @@ void on_shutdown() {
     ucout << utility::string_t(U("Server closed")) << std::endl;
     return;
 }
-
 
 int main (int argc, char *argv[]) {
     utility::string_t port= U("34568");

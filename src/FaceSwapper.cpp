@@ -31,12 +31,27 @@ FaceSwapper::FaceSwapper(int rows, int cols, const std::vector<unsigned char> &d
 FaceSwapper::~FaceSwapper(){}
 
 bool FaceSwapper::loadImg1(const std::string &filename) {
-    this->m_img1 = imread(filename, -1);
+    this->m_img1 = imread(filename, IMREAD_UNCHANGED);
+    if (this->m_img1.empty()) {
+        std::cout << "error loading img1" << std::endl;
+        exit(1);
+    } else
+    {
+        std::cout << "img1 loaded" << std::endl;
+    }
     return true;   
 }
 
 bool FaceSwapper::loadImg2(const std::string &filename) {
-    this->m_img2 = imread(filename, -1);
+    this->m_img2 = imread(filename, IMREAD_UNCHANGED);
+    if (this->m_img2.empty()) {
+        std::cout << "error loading img2" << std::endl;
+        exit(1);
+    } else
+    {
+        std::cout << "img2 loaded" << std::endl;
+    }
+    
     return true;
 }
 
@@ -46,14 +61,15 @@ bool FaceSwapper::process_swap() {
 
     FacemarkKazemi::Params params;
 
-    params.configfile = this->configFilePath;;
+    params.configfile = this->configFilePath;
 
     Ptr<FacemarkKazemi> facemark = FacemarkKazemi::create(params);
     facemark->setFaceDetector((FN_FaceDetector)FaceSwapper::myDetector, &face_cascade);
 
     std::vector<Rect> faces1, faces2;
     std::vector< std::vector<Point2f>> shape1, shape2;
-    float ratio1 = (float) this->m_img1.cols / (float) this->m_img1.rows; float ratio2 = (float) this->m_img2.cols / (float) this->m_img2.rows; 
+    float ratio1 = (float) this->m_img1.cols / (float) this->m_img1.rows; 
+    float ratio2 = (float) this->m_img2.cols / (float) this->m_img2.rows; 
     std::cout << "in process " << ratio1 << " " << ratio2 << std::endl;
     resize(this->m_img1, this->m_img1, Size(640*ratio1, 640*ratio1), 0, 0, INTER_LINEAR_EXACT);
     resize(this->m_img2, this->m_img2, Size(640*ratio2, 640*ratio2), 0, 0, INTER_LINEAR_EXACT);
@@ -62,9 +78,9 @@ bool FaceSwapper::process_swap() {
 
     facemark->getFaces(this->m_img1, faces1);
     facemark->getFaces(this->m_img2, faces2);
+    try{
     facemark->fit(this->m_img1, faces1, shape1);
     facemark->fit(this->m_img2, faces2, shape2);
-
     unsigned long numswaps = (unsigned long) min( (unsigned long)shape1.size(), (unsigned long)shape2.size());
     for (unsigned long z = 0; z < numswaps; z++) {
         std::vector<Point2f> points1 = shape1[z];
@@ -109,13 +125,16 @@ bool FaceSwapper::process_swap() {
 
         this->m_img1 = output;
     }
+    }catch(cv::Exception e) {
+        std::cout << "e catch " << e.what() << std::endl;
+    }
     return true;
 }
 
 bool FaceSwapper::myDetector( InputArray image, OutputArray ROIs, CascadeClassifier *face_cascade ) {
     cv::Mat gray;
     std::vector<Rect> faces;
-    if(image.channels()>1){
+    if(image.channels() > 1){
         cvtColor(image.getMat(),gray,COLOR_BGR2GRAY);
     }
     else{
@@ -129,7 +148,7 @@ bool FaceSwapper::myDetector( InputArray image, OutputArray ROIs, CascadeClassif
 
 void FaceSwapper::writeImg() const {
     std::vector<int> params(2);
-    //params.push_back(CV_IMWRITE_JPEG_QUALITY);
+    params.push_back(IMWRITE_JPEG_QUALITY);
     params.push_back(100);
     imwrite("abis.jpg", this->m_img1, params);
 }
@@ -192,19 +211,18 @@ void FaceSwapper::warpTriangle(Mat &img1, Mat &img2, std::vector<Point2f> &trian
     multiply(img2(rectangle2), Scalar(1.0,1.0,1.0) - mask, img2(rectangle2));
     img2(rectangle2) = img2(rectangle2) + img2Rect;
 }
-
+/*
 int main (int argc, char *arv[]) {
     FaceSwapper swapper;
-    std::string img1Path("./a.jpg");
-    std::string img2Path("./patLaf.jpg");
-    std::string haarcascadeFace("./lbpcascade_frontalFace.xml");
-    std::string configFile("./sample_config_file.xml");
+    std::string img1Path("donald_trump.jpg");
+    std::string img2Path("hillary_clinton.jpg");
+    std::string haarcascadeFace("haarcascade_frontalface_default.xml");
+    std::string configFile("sample_config_file.xml");
 
     swapper.loadImg1(img1Path);
     swapper.loadImg2(img2Path);
-    swapper.configFilePath = configFile;
+    swapper.configFilePath = "./sample_config_file.xml";
     swapper.cascadeFacePath = haarcascadeFace;
-
     swapper.process_swap();
 
     std::cout << "done" << std::endl;
@@ -212,4 +230,4 @@ int main (int argc, char *arv[]) {
 
     return 0;
 }
-
+*/

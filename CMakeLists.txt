@@ -1,16 +1,33 @@
-cmake_minimum_required(VERSION 3.1)
-# Enable c++11
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
-project(face)
+cmake_minimum_required(VERSION 2.8)
+set (CMAKE_CXX_STANDARD 14)
+project( faceswap )
+
+find_package(dlib REQUIRED)
+#include_directories(${dlib_INCLUDE_DIRS})
+#target_link_libraries(your_app dlib::dlib)
 
 find_package( OpenCV REQUIRED )
-include_directories( ${OpenCV_INCLUDE_DIRS} )
 
+find_package( Boost COMPONENTS system filesystem REQUIRED )
 
-set(SRCS src/FaceSwapper.cpp)
-set(HEADERS include/FaceSwapper.h)
+find_package( OpenSSL REQUIRED )
 
-add_executable(face ${SRCS} ${HEADERS})
+find_library( cpprestsdk-lib cpprest )
+find_library( SSL_LIB libssl.a REQUIRED )
+find_library( CRYPTO_LIB libcrypto.a REQUIRED )
+find_library( DL_LIB libdl.a REQUIRED )
 
-target_link_libraries( face ${OpenCV_LIBS})
+file(GLOB SRC src/*.cpp src/*.h)
+
+add_executable( faceswap ${SRC})
+target_link_libraries( faceswap 
+dlib::dlib 
+${OpenCV_LIBS} 
+${cpprest_LIBS} 
+cpprest 
+OpenSSL::Crypto
+${Boost_FILESYSTEM_LIBRARY}
+${Boost_SYSTEM_LIBRARY}
+${SSL_LIB}
+${CRYPTO_LIB}
+${DL_LIB})

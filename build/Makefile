@@ -111,17 +111,17 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named face
+# Target rules for targets named faceswap
 
 # Build rule for target.
-face: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 face
-.PHONY : face
+faceswap: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 faceswap
+.PHONY : faceswap
 
 # fast build rule for target.
-face/fast:
-	$(MAKE) -f CMakeFiles/face.dir/build.make CMakeFiles/face.dir/build
-.PHONY : face/fast
+faceswap/fast:
+	$(MAKE) -f CMakeFiles/faceswap.dir/build.make CMakeFiles/faceswap.dir/build
+.PHONY : faceswap/fast
 
 src/FaceSwapper.o: src/FaceSwapper.cpp.o
 
@@ -129,7 +129,7 @@ src/FaceSwapper.o: src/FaceSwapper.cpp.o
 
 # target to build an object file
 src/FaceSwapper.cpp.o:
-	$(MAKE) -f CMakeFiles/face.dir/build.make CMakeFiles/face.dir/src/FaceSwapper.cpp.o
+	$(MAKE) -f CMakeFiles/faceswap.dir/build.make CMakeFiles/faceswap.dir/src/FaceSwapper.cpp.o
 .PHONY : src/FaceSwapper.cpp.o
 
 src/FaceSwapper.i: src/FaceSwapper.cpp.i
@@ -138,7 +138,7 @@ src/FaceSwapper.i: src/FaceSwapper.cpp.i
 
 # target to preprocess a source file
 src/FaceSwapper.cpp.i:
-	$(MAKE) -f CMakeFiles/face.dir/build.make CMakeFiles/face.dir/src/FaceSwapper.cpp.i
+	$(MAKE) -f CMakeFiles/faceswap.dir/build.make CMakeFiles/faceswap.dir/src/FaceSwapper.cpp.i
 .PHONY : src/FaceSwapper.cpp.i
 
 src/FaceSwapper.s: src/FaceSwapper.cpp.s
@@ -147,8 +147,62 @@ src/FaceSwapper.s: src/FaceSwapper.cpp.s
 
 # target to generate assembly for a file
 src/FaceSwapper.cpp.s:
-	$(MAKE) -f CMakeFiles/face.dir/build.make CMakeFiles/face.dir/src/FaceSwapper.cpp.s
+	$(MAKE) -f CMakeFiles/faceswap.dir/build.make CMakeFiles/faceswap.dir/src/FaceSwapper.cpp.s
 .PHONY : src/FaceSwapper.cpp.s
+
+src/SwapFaceServer.o: src/SwapFaceServer.cpp.o
+
+.PHONY : src/SwapFaceServer.o
+
+# target to build an object file
+src/SwapFaceServer.cpp.o:
+	$(MAKE) -f CMakeFiles/faceswap.dir/build.make CMakeFiles/faceswap.dir/src/SwapFaceServer.cpp.o
+.PHONY : src/SwapFaceServer.cpp.o
+
+src/SwapFaceServer.i: src/SwapFaceServer.cpp.i
+
+.PHONY : src/SwapFaceServer.i
+
+# target to preprocess a source file
+src/SwapFaceServer.cpp.i:
+	$(MAKE) -f CMakeFiles/faceswap.dir/build.make CMakeFiles/faceswap.dir/src/SwapFaceServer.cpp.i
+.PHONY : src/SwapFaceServer.cpp.i
+
+src/SwapFaceServer.s: src/SwapFaceServer.cpp.s
+
+.PHONY : src/SwapFaceServer.s
+
+# target to generate assembly for a file
+src/SwapFaceServer.cpp.s:
+	$(MAKE) -f CMakeFiles/faceswap.dir/build.make CMakeFiles/faceswap.dir/src/SwapFaceServer.cpp.s
+.PHONY : src/SwapFaceServer.cpp.s
+
+src/faceSwap.o: src/faceSwap.cpp.o
+
+.PHONY : src/faceSwap.o
+
+# target to build an object file
+src/faceSwap.cpp.o:
+	$(MAKE) -f CMakeFiles/faceswap.dir/build.make CMakeFiles/faceswap.dir/src/faceSwap.cpp.o
+.PHONY : src/faceSwap.cpp.o
+
+src/faceSwap.i: src/faceSwap.cpp.i
+
+.PHONY : src/faceSwap.i
+
+# target to preprocess a source file
+src/faceSwap.cpp.i:
+	$(MAKE) -f CMakeFiles/faceswap.dir/build.make CMakeFiles/faceswap.dir/src/faceSwap.cpp.i
+.PHONY : src/faceSwap.cpp.i
+
+src/faceSwap.s: src/faceSwap.cpp.s
+
+.PHONY : src/faceSwap.s
+
+# target to generate assembly for a file
+src/faceSwap.cpp.s:
+	$(MAKE) -f CMakeFiles/faceswap.dir/build.make CMakeFiles/faceswap.dir/src/faceSwap.cpp.s
+.PHONY : src/faceSwap.cpp.s
 
 # Help Target
 help:
@@ -157,11 +211,17 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... rebuild_cache"
-	@echo "... face"
+	@echo "... faceswap"
 	@echo "... edit_cache"
 	@echo "... src/FaceSwapper.o"
 	@echo "... src/FaceSwapper.i"
 	@echo "... src/FaceSwapper.s"
+	@echo "... src/SwapFaceServer.o"
+	@echo "... src/SwapFaceServer.i"
+	@echo "... src/SwapFaceServer.s"
+	@echo "... src/faceSwap.o"
+	@echo "... src/faceSwap.i"
+	@echo "... src/faceSwap.s"
 .PHONY : help
 
 

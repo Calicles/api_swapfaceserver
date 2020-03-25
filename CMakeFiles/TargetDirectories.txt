@@ -1,3 +1,0 @@
-/home/antoine/dev/c++Appli/rest/API_swapFace/CMakeFiles/rebuild_cache.dir
-/home/antoine/dev/c++Appli/rest/API_swapFace/CMakeFiles/face.dir
-/home/antoine/dev/c++Appli/rest/API_swapFace/CMakeFiles/edit_cache.dir
