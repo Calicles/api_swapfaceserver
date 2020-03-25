@@ -107,7 +107,7 @@ void warpTriangle(Mat &img1, Mat &img2, vector<Point2f> &t1, vector<Point2f> &t2
 }
 
 
-void process()
+void process_swap()
 {	
 	//Read input images
     string filename1("./a.jpg");
@@ -117,6 +117,7 @@ void process()
     
     Mat img1 = imread(filename1);
     Mat img2 = imread(filename2);
+    
     Mat img1Warped = img2.clone();
 	
 	fs::FaceLandMark dect(data);	

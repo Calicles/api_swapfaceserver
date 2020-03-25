@@ -12,9 +12,6 @@ private:
     void handle_options(web::http::http_request message);
 
     web::http::experimental::listener::http_listener m_listener;
-    std::vector<unsigned char> m_image_bytes;
-    int imgWidth;
-    int imgHeight;
 
 public:
     SwapFaceServer();

@@ -54,7 +54,7 @@ void SwapFaceServer::handle_post(http_request message) {
     //ucout << message.to_string() << std::endl;
     
     json::value temp;
-/*
+
     message.extract_string()       //extracts the request content into a json
         .then([=](string_t json)
         {
@@ -62,31 +62,23 @@ void SwapFaceServer::handle_post(http_request message) {
             json::array jsonArray = v[U("image")].as_array();
 
             int size = jsonArray.size();
-            this->m_image_bytes.reserve(size);
+            vector<unsigned char> bytes(size);
+
             this->imgWidth = v[U("imageWidth")].as_integer();
             this->imgHeight = v[U("imageHeight")].as_integer();
-            ucout <<  this->imgWidth << " " << this->imgHeight << std::endl;
 
             for (int i = 0; i < size; i++) {
                 this->m_image_bytes.push_back(jsonArray[i].as_integer());
                 if (i == size -1) {
                     int nbr= this->m_image_bytes.back();
-                    ucout << nbr << " size " << size << std::endl;
                 }
             }
-        }).wait();
-    FaceSwapper swapper(this->imgHeight, this->imgWidth, this->m_image_bytes);
-    if (!swapper.process_swap()) {
-
-    }
-    */
+            FaceSwapper swapper(bytes, "./donald_trump.jpg");
     ucout << "in before" << std::endl;
-    pplx::task<void> task([] () {
-        process();
-        ucout << "in after" << std::endl;
+            swapper.process_swap();
+        }).wait();
 
-    });
-    task.get();
+    ucout << "in after" << std::endl;
 
     http_response response(status_codes::OK);
     response.headers().add(U("Allow"), U("GET, POST, OPTIONS"));
