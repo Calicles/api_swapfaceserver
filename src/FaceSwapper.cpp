@@ -68,6 +68,17 @@ void FaceSwapper::writeImg(const std::string &imgFileName,const  Mat &img) const
     imwrite(imgFileName, img, params);
 }
 
+void FaceSwapper::copyImgSwappedTo(std::vector<unsigned char> &dst) {
+    //reserve the size of Mat in dst
+    if (this->m_imgSwapped.isContinuous()) {
+        dst.assign(this->m_imgSwapped.data, this->m_imgSwapped.data + this->m_imgSwapped.total());
+    } else {
+        for (int i = 0; i < this->m_imgSwapped.rows; i++) {
+            dst.insert(dst.end(), this->m_imgSwapped.ptr<unsigned char>(i), this->m_imgSwapped.ptr<unsigned char>(i) + this->m_imgSwapped.cols);
+        }
+    }
+}
+
 std::vector<unsigned char> FaceSwapper::toVector() const  {
     std::vector<unsigned char> res;
     return res;
@@ -207,10 +218,9 @@ bool FaceSwapper::process_swap() {
     Rect r = boundingRect(hull2);
     Point center = (r.tl() + r.br()) / 2;
 
-    Mat output;
     img1Warped.convertTo(img1Warped, CV_8UC3);
-    seamlessClone(img1Warped, this->m_img2, mask, center, output, NORMAL_CLONE);
-    imwrite("test.png", output);
+    seamlessClone(img1Warped, this->m_img2, mask, center, this->m_imgSwapped, NORMAL_CLONE);
+    imwrite("test.png", this->m_imgSwapped);
 
     return true;
 }

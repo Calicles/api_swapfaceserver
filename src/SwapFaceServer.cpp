@@ -49,7 +49,6 @@ void SwapFaceServer::handle_get(http_request message) {
 void SwapFaceServer::handle_post(http_request message) {
     //ucout << message.to_string() << std::endl;
     
-    json::value temp;
 
     message.extract_string()       
         .then([=](string_t json)
@@ -69,11 +68,21 @@ void SwapFaceServer::handle_post(http_request message) {
                     int nbr= this->bytes.back();
                 }
             }
-            ucout << U("in") << std::endl;
             FaceSwapper swapper(width, height, this->bytes, "./donald_trump.jpg");
     ucout << "in before" << std::endl;
             swapper.process_swap();
+            swapper.copyImgSwappedTo(this->bytes);
         }).wait();
+
+    json::value img;
+    size_t n = this->bytes.size();
+    json::value answer;
+    img = answer.array();
+
+    for (size_t i = 0; i < n; i++) {
+        img[i] = json::value::number(this->bytes[i]);
+    }
+
 
     ucout << "in after" << std::endl;
 
@@ -82,7 +91,7 @@ void SwapFaceServer::handle_post(http_request message) {
     response.headers().add(U("Access-Control-Allow-Origin"), U("*"));
     response.headers().add(U("Access-Control-Allow-Methods"), U("GET, POST, OPTIONS"));
     response.headers().add(U("Access-Control-Allow-Headers"), U("Content-Type"));
-    //response.set_body();
+    response.set_body(img);
     message.reply(response);
     return;
 }
