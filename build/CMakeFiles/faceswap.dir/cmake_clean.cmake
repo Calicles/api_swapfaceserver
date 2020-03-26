@@ -1,7 +1,6 @@
 file(REMOVE_RECURSE
   "CMakeFiles/faceswap.dir/src/FaceSwapper.cpp.o"
   "CMakeFiles/faceswap.dir/src/SwapFaceServer.cpp.o"
-  "CMakeFiles/faceswap.dir/src/faceSwap.cpp.o"
   "faceswap.pdb"
   "faceswap"
 )

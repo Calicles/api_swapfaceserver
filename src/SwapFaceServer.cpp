@@ -6,9 +6,9 @@
 #include <vector>    
 #include <stdio.h>
 
-#include "SwapFaceServer.h"
 #include "FaceSwapper.h"
-#include "faceswap.hpp"
+
+#include "SwapFaceServer.h"
 
 using namespace web;
 using namespace http;
@@ -46,34 +46,31 @@ void SwapFaceServer::handle_get(http_request message) {
     return;
 }
 
-void SwapFaceServer::handle_put(http_request message) {
-
-}
-
 void SwapFaceServer::handle_post(http_request message) {
     //ucout << message.to_string() << std::endl;
     
     json::value temp;
 
-    message.extract_string()       //extracts the request content into a json
+    message.extract_string()       
         .then([=](string_t json)
         {
             json::value v = json::value::parse(json);
             json::array jsonArray = v[U("image")].as_array();
 
             int size = jsonArray.size();
-            vector<unsigned char> bytes(size);
+            this->bytes.reserve(size);
 
-            this->imgWidth = v[U("imageWidth")].as_integer();
-            this->imgHeight = v[U("imageHeight")].as_integer();
+            size_t width(v[U("imageWidth")].as_integer());
+            size_t height(v[U("imageHeight")].as_integer());
 
             for (int i = 0; i < size; i++) {
-                this->m_image_bytes.push_back(jsonArray[i].as_integer());
+                this->bytes.push_back(jsonArray[i].as_integer());
                 if (i == size -1) {
-                    int nbr= this->m_image_bytes.back();
+                    int nbr= this->bytes.back();
                 }
             }
-            FaceSwapper swapper(bytes, "./donald_trump.jpg");
+            ucout << U("in") << std::endl;
+            FaceSwapper swapper(width, height, this->bytes, "./donald_trump.jpg");
     ucout << "in before" << std::endl;
             swapper.process_swap();
         }).wait();
@@ -88,10 +85,6 @@ void SwapFaceServer::handle_post(http_request message) {
     //response.set_body();
     message.reply(response);
     return;
-}
-
-void SwapFaceServer::handle_delete(http_request message) {
-
 }
 
 std::unique_ptr<SwapFaceServer>g_http;

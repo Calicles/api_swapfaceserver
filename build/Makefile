@@ -177,33 +177,6 @@ src/SwapFaceServer.cpp.s:
 	$(MAKE) -f CMakeFiles/faceswap.dir/build.make CMakeFiles/faceswap.dir/src/SwapFaceServer.cpp.s
 .PHONY : src/SwapFaceServer.cpp.s
 
-src/faceSwap.o: src/faceSwap.cpp.o
-
-.PHONY : src/faceSwap.o
-
-# target to build an object file
-src/faceSwap.cpp.o:
-	$(MAKE) -f CMakeFiles/faceswap.dir/build.make CMakeFiles/faceswap.dir/src/faceSwap.cpp.o
-.PHONY : src/faceSwap.cpp.o
-
-src/faceSwap.i: src/faceSwap.cpp.i
-
-.PHONY : src/faceSwap.i
-
-# target to preprocess a source file
-src/faceSwap.cpp.i:
-	$(MAKE) -f CMakeFiles/faceswap.dir/build.make CMakeFiles/faceswap.dir/src/faceSwap.cpp.i
-.PHONY : src/faceSwap.cpp.i
-
-src/faceSwap.s: src/faceSwap.cpp.s
-
-.PHONY : src/faceSwap.s
-
-# target to generate assembly for a file
-src/faceSwap.cpp.s:
-	$(MAKE) -f CMakeFiles/faceswap.dir/build.make CMakeFiles/faceswap.dir/src/faceSwap.cpp.s
-.PHONY : src/faceSwap.cpp.s
-
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -219,9 +192,6 @@ help:
 	@echo "... src/SwapFaceServer.o"
 	@echo "... src/SwapFaceServer.i"
 	@echo "... src/SwapFaceServer.s"
-	@echo "... src/faceSwap.o"
-	@echo "... src/faceSwap.i"
-	@echo "... src/faceSwap.s"
 .PHONY : help
 
 
