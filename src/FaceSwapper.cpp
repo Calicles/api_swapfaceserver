@@ -221,7 +221,7 @@ bool FaceSwapper::process_swap() {
 
     img1Warped.convertTo(img1Warped, CV_8UC3);
     seamlessClone(img1Warped, this->m_img2, mask, center, this->m_imgSwapped, NORMAL_CLONE);
-    imwrite("/home/antoine/dev/react/CV/cv/public/test.png", this->m_imgSwapped);
+    imwrite("test.png", this->m_imgSwapped);
 
     return true;
 }

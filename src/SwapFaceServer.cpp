@@ -68,10 +68,10 @@ void SwapFaceServer::handle_post(http_request message) {
                     int nbr= this->bytes.back();
                 }
             }
-            /*FaceSwapper swapper(width, height, this->bytes, "./donald_trump.jpg");
+            FaceSwapper swapper(width, height, this->bytes, "./brad-pitt-acteur.jpg");
     ucout << "in before" << std::endl;
             swapper.process_swap();
-           swapper.copyImgSwappedTo(this->bytes);*/
+            swapper.copyImgSwappedTo(this->bytes);
         }).wait();
     /*
     size_t n = this->bytes.size();
@@ -106,6 +106,8 @@ void SwapFaceServer::handle_post(http_request message) {
     response.headers().add(U("Access-Control-Allow-Origin"), U("*"));
     response.headers().add(U("Access-Control-Allow-Methods"), U("GET, POST, OPTIONS"));
     response.headers().add(U("Access-Control-Allow-Headers"), U("Content-Type"));
+    response.headers().add(U("Content-Type"), U("aplication/octet-stream"));
+    response.headers().add(U("Content-Disposition"), U("inline; filename=res.png")); // or attachment otherwise inline
     response.set_body(this->bytes);
     message.reply(response);
     ucout << "in after" << std::endl;
