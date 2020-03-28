@@ -732,6 +732,7 @@ CMakeFiles/faceswap.dir/src/FaceSwapper.cpp.o: /usr/local/include/opencv4/opencv
 CMakeFiles/faceswap.dir/src/SwapFaceServer.cpp.o: ../src/FaceSwapper.h
 CMakeFiles/faceswap.dir/src/SwapFaceServer.cpp.o: ../src/SwapFaceServer.cpp
 CMakeFiles/faceswap.dir/src/SwapFaceServer.cpp.o: ../src/SwapFaceServer.h
+CMakeFiles/faceswap.dir/src/SwapFaceServer.cpp.o: ../src/base64.h
 CMakeFiles/faceswap.dir/src/SwapFaceServer.cpp.o: /usr/local/include/opencv4/opencv2/core/base.hpp
 CMakeFiles/faceswap.dir/src/SwapFaceServer.cpp.o: /usr/local/include/opencv4/opencv2/core/bufferpool.hpp
 CMakeFiles/faceswap.dir/src/SwapFaceServer.cpp.o: /usr/local/include/opencv4/opencv2/core/check.hpp
@@ -752,4 +753,7 @@ CMakeFiles/faceswap.dir/src/SwapFaceServer.cpp.o: /usr/local/include/opencv4/ope
 CMakeFiles/faceswap.dir/src/SwapFaceServer.cpp.o: /usr/local/include/opencv4/opencv2/core/types.hpp
 CMakeFiles/faceswap.dir/src/SwapFaceServer.cpp.o: /usr/local/include/opencv4/opencv2/core/vsx_utils.hpp
 CMakeFiles/faceswap.dir/src/SwapFaceServer.cpp.o: /usr/local/include/opencv4/opencv2/opencv_modules.hpp
+
+CMakeFiles/faceswap.dir/src/base64.cpp.o: ../src/base64.cpp
+CMakeFiles/faceswap.dir/src/base64.cpp.o: ../src/base64.h
 

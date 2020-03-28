@@ -70,13 +70,14 @@ void FaceSwapper::writeImg(const std::string &imgFileName,const  Mat &img) const
 
 void FaceSwapper::copyImgSwappedTo(std::vector<unsigned char> &dst) {
     //reserve the size of Mat in dst
-    if (this->m_imgSwapped.isContinuous()) {
+    /*if (this->m_imgSwapped.isContinuous()) {
         dst.assign(this->m_imgSwapped.data, this->m_imgSwapped.data + this->m_imgSwapped.total());
     } else {
         for (int i = 0; i < this->m_imgSwapped.rows; i++) {
             dst.insert(dst.end(), this->m_imgSwapped.ptr<unsigned char>(i), this->m_imgSwapped.ptr<unsigned char>(i) + this->m_imgSwapped.cols);
         }
-    }
+    }*/
+    imencode(".png", this->m_imgSwapped, dst);
 }
 
 std::vector<unsigned char> FaceSwapper::toVector() const  {
@@ -220,7 +221,7 @@ bool FaceSwapper::process_swap() {
 
     img1Warped.convertTo(img1Warped, CV_8UC3);
     seamlessClone(img1Warped, this->m_img2, mask, center, this->m_imgSwapped, NORMAL_CLONE);
-    imwrite("test.png", this->m_imgSwapped);
+    imwrite("/home/antoine/dev/react/CV/cv/public/test.png", this->m_imgSwapped);
 
     return true;
 }
