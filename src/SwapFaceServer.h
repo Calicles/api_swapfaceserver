@@ -3,6 +3,13 @@
 
 #include <cpprest/http_listener.h>              // HTTP server
 
+#define BRAD "./bradPitt.jpg"
+#define TRUMP "./donaled_trump"
+#define CLINTON "./hillary_clinton.jpg"
+
+#define IMAGES U("images")
+#define SWAP U("swap")
+
 class SwapFaceServer {
 private:
     void handle_get(web::http::http_request message);
@@ -10,10 +17,9 @@ private:
     void handle_post(web::http::http_request message);
     void handle_delete(web::http::http_request message);
     void handle_options(web::http::http_request message);
-
+    void SendResponse(const bool responseOk = true, const std::vector<unsigned char> &data, http_request &message);
 
     web::http::experimental::listener::http_listener m_listener;
-    std::vector<unsigned char> bytes;
 
 public:
     SwapFaceServer();

@@ -24,7 +24,7 @@ private:
 
 public:
     FaceSwapper();
-    FaceSwapper(size_t width, size_t height, const std::vector<unsigned char> &img1, const std::string &fileNameImg2);
+    FaceSwapper(const std::vector<unsigned char> &img1, const std::string &fileNameImg2);
     FaceSwapper(const std::string &img1Filename, const std::string &img2FileName);
     ~FaceSwapper();
 

@@ -12,7 +12,7 @@
 using namespace std;
 using namespace cv;
 
-FaceSwapper::FaceSwapper(size_t width, size_t height, const std::vector<unsigned char> &img1, const std::string &fileNameImg2) 
+FaceSwapper::FaceSwapper(const std::vector<unsigned char> &img1, const std::string &fileNameImg2) 
     : m_img1(img1, true), m_img2(imread(fileNameImg2)), m_img1FileName("user.jpg"), m_img2FileName(fileNameImg2)
 {
     this->m_img1 = imdecode(this->m_img1, IMREAD_COLOR);

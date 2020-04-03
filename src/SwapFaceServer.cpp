@@ -4,7 +4,7 @@
 #include <cpprest/uri.h>
 
 #include <vector>    
-#include <stdio.h>
+#include <fstream>
 
 #include "FaceSwapper.h"
 #include "base64.h"
@@ -27,58 +27,112 @@ SwapFaceServer::SwapFaceServer(utility::string_t url) : m_listener(url) {
 
 SwapFaceServer::~SwapFaceServer(){}
 
-  void SwapFaceServer::handle_options(http_request message)
-  {
-    http_response response(status_codes::OK);
+void SwapFaceServer::sendResponse(const bool responseOk, const std::vector<unsigned char> &data, http_request &message) {
+    int statusCode(status_codes::OK);
+    if (!responseOk) {
+        statusCode = status_codes::FAILED;
+    }
+    http_response response(statusCode);
     response.headers().add(U("Allow"), U("GET, POST, OPTIONS"));
     response.headers().add(U("Access-Control-Allow-Origin"), U("*"));
     response.headers().add(U("Access-Control-Allow-Methods"), U("GET, POST, OPTIONS"));
     response.headers().add(U("Access-Control-Allow-Headers"), U("Content-Type"));
-    message.reply(response);
+    if (data != null && date.size() > 0) {
+        response.headers().add(U("Content-Type"), U("aplication/octet-stream"));
+        response.headers().add(U("Content-Disposition"), U("inline; filename=res.png")); // or attachment otherwise inline
+        response.set_body(bytes);
+        message.reply(response);
+    }
+    massage.reply(response);
+}
+
+bool getPictureNameByIndex(const size_t index, std::string fileName) {
+    switch (index) {
+        case "1":
+            fileName = BRAD;
+        return true;
+
+        case "2":
+            fileName = TRUMP;
+        return true;
+
+        case "3":
+            fileName = CLINTON;
+        return true;
+
+        case "4":
+        return true;
+    }
+    return false;
+}
+
+  void SwapFaceServer::handle_options(http_request message)
+  {
+    this->sendResponse(true, null, message);
+    return;
   }
 
 void SwapFaceServer::handle_get(http_request message) {
-    http_response response(status_codes::OK);
-    response.headers().add(U("Access-Control-Allow-Origin"), U("*"));
-    response.set_body(string_t(U("hello world")));
-    message.reply(response);
+    std::vector<unsigned char> bytes;
+    bool succes(false);
+    std::string filePath;
+    std::vector<string_t> paths = http_request::split_path(
+        message.relative_uri().path()
+    );
+    // Request to have a picture
+    if (paths[0] == IMAGES && this->getPictureNameByIdex(paths[1], filePath)) {
+            std::ifstream ifs(filePath.c_str(), ios_base::in);
+            unsigned char c = 0;
+
+            while (ifs.get(c)) {
+                bytes.push_back(c);
+            }
+            success = true;
+    // request to swap from two pictures by indexes
+    } else if (paths[0] == SWAP) {
+        std::string filePath2;
+        if (this->getPictureNameByIndex(paths[1], filePath) && this->getPictureNameByIndex(paths[2], filePath2)) {
+            FaceSwapper swapper(filePath, filePath2);
+            swapper.process_swap();
+            swapper.copyImageSwappedTo(bytes);
+            success = true;
+        }
+    // ununderstood request
+    } else {
+        success = false;
+    }
+    this->sendResponse(success, bytes, message);
     return;
 }
 
 void SwapFaceServer::handle_post(http_request message) {
-    message.extract_string()       
-        .then([=](string_t json)
+    message.extract_json()       
+        .then([=](json::value json)
         {
-            json::value v = json::value::parse(json);
-            json::array jsonArray = v[U("image")].as_array();
+            std::vector<unsigned char> bytes;
+            bool succes(false);
 
-            int size = jsonArray.size();
-            this->bytes.reserve(size);
+            try{
+                //json::value v = json::value::parse(json);
+                json::array jsonArray = value[U("image")].as_array();
 
-            size_t width(v[U("imageWidth")].as_integer());
-            size_t height(v[U("imageHeight")].as_integer());
+                size_t size = jsonArray.size();
+                bytes.reserve(size);
+                size_t width(v[U("imageWidth")].as_integer());
+                size_t height(v[U("imageHeight")].as_integer());
 
-            for (int i = 0; i < size; i++) {
-                this->bytes.push_back(jsonArray[i].as_integer());
-                if (i == size -1) {
-                    int nbr= this->bytes.back();
+                for (size_t i = 0; i < size; i++) {
+                    bytes.push_back(jsonArray[i].as_integer());
                 }
+                FaceSwapper swapper(bytes, "./brad-pitt-acteur.jpg");
+                swapper.process_swap();
+                swapper.copyImgSwappedTo(bytes);
+                success = true;
+            }catch (Exception e) {
+                ucout << U("exception thrown") << e.what() << std::endl;
             }
-            FaceSwapper swapper(width, height, this->bytes, "./brad-pitt-acteur.jpg");
-            swapper.process_swap();
-            swapper.copyImgSwappedTo(this->bytes);
+            this->SendResponse(success, bytes, message);
         }).wait();
-
-    http_response response(status_codes::OK);
-    response.headers().add(U("Allow"), U("GET, POST, OPTIONS"));
-    response.headers().add(U("Access-Control-Allow-Origin"), U("*"));
-    response.headers().add(U("Access-Control-Allow-Methods"), U("GET, POST, OPTIONS"));
-    response.headers().add(U("Access-Control-Allow-Headers"), U("Content-Type"));
-    response.headers().add(U("Content-Type"), U("aplication/octet-stream"));
-    response.headers().add(U("Content-Disposition"), U("inline; filename=res.png")); // or attachment otherwise inline
-    response.set_body(this->bytes);
-    message.reply(response);
-    ucout << "in after" << std::endl;
     return;
 }
 
