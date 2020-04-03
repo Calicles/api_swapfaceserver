@@ -25,7 +25,9 @@ cpprest/uri.h
 -
 vector
 -
-stdio.h
+fstream
+-
+iostream
 -
 FaceSwapper.h
 /home/antoine/dev/c++Appli/rest/API_swapFace/src/FaceSwapper.h
@@ -36,6 +38,8 @@ SwapFaceServer.h
 
 /home/antoine/dev/c++Appli/rest/API_swapFace/src/SwapFaceServer.h
 cpprest/http_listener.h
+-
+iostream
 -
 
 /home/antoine/dev/c++Appli/rest/API_swapFace/src/base64.h

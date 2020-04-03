@@ -5,6 +5,8 @@
 
 #include <vector>    
 #include <fstream>
+#include <iostream>
+
 
 #include "FaceSwapper.h"
 #include "base64.h"
@@ -27,81 +29,99 @@ SwapFaceServer::SwapFaceServer(utility::string_t url) : m_listener(url) {
 
 SwapFaceServer::~SwapFaceServer(){}
 
-void SwapFaceServer::sendResponse(const bool responseOk, const std::vector<unsigned char> &data, http_request &message) {
-    int statusCode(status_codes::OK);
-    if (!responseOk) {
-        statusCode = status_codes::FAILED;
-    }
-    http_response response(statusCode);
+void addHeaders(http_response &response) {
     response.headers().add(U("Allow"), U("GET, POST, OPTIONS"));
     response.headers().add(U("Access-Control-Allow-Origin"), U("*"));
     response.headers().add(U("Access-Control-Allow-Methods"), U("GET, POST, OPTIONS"));
     response.headers().add(U("Access-Control-Allow-Headers"), U("Content-Type"));
-    if (data != null && date.size() > 0) {
-        response.headers().add(U("Content-Type"), U("aplication/octet-stream"));
-        response.headers().add(U("Content-Disposition"), U("inline; filename=res.png")); // or attachment otherwise inline
-        response.set_body(bytes);
-        message.reply(response);
-    }
-    massage.reply(response);
 }
 
-bool getPictureNameByIndex(const size_t index, std::string &dest) {
-    switch (index) {
-        case "1":
-            dest = BRAD;
-        return true;
+void SwapFaceServer::sendResponse(const std::vector<unsigned char> &data, http_request &message) {
+    http_response response(OK);
+    this->addHeaders(response);
+    response.headers().add(U("Content-Type"), U("aplication/octet-stream"));
+    response.headers().add(U("Content-Disposition"), U("inline; filename=res.png")); // or attachment otherwise inline
+    response.set_body(data);
+    message.reply(response);
+}
 
-        case "2":
-            dest = TRUMP;
-        return true;
+void SwapFaceServer::sendError(size_t error_code, string_t msg, http_request &message) {
+    http_response response(error_code);
+    this->addHeaders(response);
+    response.set_body(msg);
+    message.reply(response);
+}
 
-        case "3":
-            dest = CLINTON;
-        return true;
+std::string getImageNameByIndex(string_t index) {
+    switch (index[0]) {
+        case '1':
+            return BRAD;
 
-        case "4":
-        return true;
+        case '2':
+            return TRUMP;
+
+        case '3':
+            return CLINTON;
+
+        case '4':
+            return WONDER_WOMAN;
     }
-    return false;
+    return "";
 }
 
   void SwapFaceServer::handle_options(http_request message)
   {
-    this->sendResponse(true, null, message);
+    http_response response(status_codes::OK);
+    this->addHeaders(response);
+    message.reply(response);
     return;
   }
 
 void SwapFaceServer::handle_get(http_request message) {
     std::vector<unsigned char> bytes;
-    bool succes(false);
     std::string filePath;
-    std::vector<string_t> paths = http_request::split_path(
+    std::vector<string_t> paths = web::uri::split_path(
         message.relative_uri().path()
     );
-    // Request to have a picture
-    if (paths[0] == IMAGES && this->getPictureNameByIdex(paths[1], filePath)) {
-            std::ifstream ifs(filePath.c_str(), ios_base::in);
-            unsigned char c = 0;
 
-            while (ifs.get(c)) {
+    // Request to have a picture
+    if (paths[0] == IMAGES && !(filePath = this->getImageNameByIndex(paths[1])).empty()) {
+            std::ifstream ifs(filePath.c_str(), std::ios_base::in);
+            unsigned char c = ifs.get();
+
+            while (ifs.good()) {
                 bytes.push_back(c);
+                c = ifs.get();
             }
-            success = true;
-    // request to swap from two pictures by indexes
+        this->sendResponse(bytes, message);
+
+    // request to swap from two images by indexes
     } else if (paths[0] == SWAP) {
         std::string filePath2;
-        if (this->getPictureNameByIndex(paths[1], filePath) && this->getPictureNameByIndex(paths[2], filePath2)) {
+        if (!(filePath = this->getImageNameByIndex(paths[1])).empty() &&
+                !(filePath2 = this->getImageNameByIndex(paths[2])).empty()) {
             FaceSwapper swapper(filePath, filePath2);
             swapper.process_swap();
-            swapper.copyImageSwappedTo(bytes);
-            success = true;
+            swapper.copyImgSwappedTo(bytes);
+            this->sendResponse(bytes, message);
+        }else {
+            this->sendError(EXT_ERROR, U("image not found"), message);
         }
+
+    // Request for images count
+    }else if (paths[0] == COUNT) {
+        json::value json;
+        json[U("count")] = IMG_COUNT;
+        http_response response(OK);
+
+        this->addHeaders(response);
+        response.set_body(json);
+        message.reply(response);
+
     // ununderstood request
     } else {
-        success = false;
+        this->sendError(EXT_ERROR, U("request not understood"), message);
     }
-    this->sendResponse(success, bytes, message);
     return;
 }
 
@@ -110,28 +130,29 @@ void SwapFaceServer::handle_post(http_request message) {
         .then([=](json::value json)
         {
             std::vector<unsigned char> bytes;
-            bool succes(false);
 
             try{
                 //json::value v = json::value::parse(json);
-                json::array jsonArray = value[U("image")].as_array();
+                json::array jsonArray = json[U("image")].as_array();
+                string_t image2Name = json[U("image2Name")].as_string();
 
                 size_t size = jsonArray.size();
                 bytes.reserve(size);
-                size_t width(v[U("imageWidth")].as_integer());
-                size_t height(v[U("imageHeight")].as_integer());
+                size_t width(json[U("imageWidth")].as_integer());
+                size_t height(json[U("imageHeight")].as_integer());
 
                 for (size_t i = 0; i < size; i++) {
                     bytes.push_back(jsonArray[i].as_integer());
                 }
-                FaceSwapper swapper(bytes, "./brad-pitt-acteur.jpg");
+                FaceSwapper swapper(bytes, image2Name);
                 swapper.process_swap();
                 swapper.copyImgSwappedTo(bytes);
-                success = true;
+                this->SendResponse(OK, bytes, message);
             }catch (Exception e) {
-                ucout << U("exception thrown") << e.what() << std::endl;
+                string_t msg(U("Intern error "));
+                msg.append(e.what());
+                this->sendError(INTERN_ERROR, msg, message);
             }
-            this->SendResponse(success, bytes, message);
         }).wait();
     return;
 }
