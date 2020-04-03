@@ -46,18 +46,18 @@ void SwapFaceServer::sendResponse(const bool responseOk, const std::vector<unsig
     massage.reply(response);
 }
 
-bool getPictureNameByIndex(const size_t index, std::string fileName) {
+bool getPictureNameByIndex(const size_t index, std::string &dest) {
     switch (index) {
         case "1":
-            fileName = BRAD;
+            dest = BRAD;
         return true;
 
         case "2":
-            fileName = TRUMP;
+            dest = TRUMP;
         return true;
 
         case "3":
-            fileName = CLINTON;
+            dest = CLINTON;
         return true;
 
         case "4":

@@ -18,6 +18,7 @@ private:
     void handle_delete(web::http::http_request message);
     void handle_options(web::http::http_request message);
     void SendResponse(const bool responseOk = true, const std::vector<unsigned char> &data, http_request &message);
+    bool getPictureNameByIndex(const size_t index, std::string &dest);
 
     web::http::experimental::listener::http_listener m_listener;
 
