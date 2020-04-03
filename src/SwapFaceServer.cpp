@@ -34,7 +34,6 @@ SwapFaceServer::~SwapFaceServer(){}
     response.headers().add(U("Access-Control-Allow-Origin"), U("*"));
     response.headers().add(U("Access-Control-Allow-Methods"), U("GET, POST, OPTIONS"));
     response.headers().add(U("Access-Control-Allow-Headers"), U("Content-Type"));
-    ucout << string_t(U("handle request OPTIONS")) << std::endl;
     message.reply(response);
   }
 
@@ -47,9 +46,6 @@ void SwapFaceServer::handle_get(http_request message) {
 }
 
 void SwapFaceServer::handle_post(http_request message) {
-    //ucout << message.to_string() << std::endl;
-    
-
     message.extract_string()       
         .then([=](string_t json)
         {
@@ -69,38 +65,10 @@ void SwapFaceServer::handle_post(http_request message) {
                 }
             }
             FaceSwapper swapper(width, height, this->bytes, "./brad-pitt-acteur.jpg");
-    ucout << "in before" << std::endl;
             swapper.process_swap();
             swapper.copyImgSwappedTo(this->bytes);
         }).wait();
-    /*
-    size_t n = this->bytes.size();
-    json::value answer;
-    json::value img = answer.array(n);
-    ucout << n << std::endl;
-    for (size_t i = 0; i < n; i++) {
-        //img[i] = json::value::number(this->bytes[i]);
-        string_t byte = utility::conversions::to_base64(this->bytes[i]);
-        img[i] = json::value::string(byte);
-    }
-    //json::value JSON;
-    //JSON[U("image")] = img;
-    //std::stringstream ssbuff;
-    //std::copy(this->bytes.begin(), this->bytes.end(), std::ostream_iterator<unsigned char>(ssbuff, ""));
 
-    /*std::ifstream InFile( "./test.png", std::ifstream::binary );
-    std::vector<char> data( ( std::istreambuf_iterator<char>( InFile ) ), std::istreambuf_iterator<char>() );
-
-    string_t res("");
-    for (size_t i = 0; i < data.size(); i++) {
-        res += utility::conversions::to_base64(data[i]);
-    }
-    std::string code = base64_encode((unsigned char*)&data[0], (unsigned int)data.size());
-
-    json::value obj = json::value::string(code);
-    
-    string_t url = U("/home/antoine/dev/c++Appli/rest/API_swapFace/test.png");
-    */
     http_response response(status_codes::OK);
     response.headers().add(U("Allow"), U("GET, POST, OPTIONS"));
     response.headers().add(U("Access-Control-Allow-Origin"), U("*"));
