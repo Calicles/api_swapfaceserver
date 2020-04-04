@@ -29,7 +29,7 @@ private:
     void addHeaders(web::http::http_response &response);
     void sendResponse(const std::vector<unsigned char> &data, web::http::http_request &message);
     void sendError(size_t error_code, utility::string_t msg, web::http::http_request &message);
-    bool getImageNameByIndex(utility::string_t index);
+    std::string getImageNameByIndex(utility::string_t indexStr);
 
     web::http::experimental::listener::http_listener m_listener;
 

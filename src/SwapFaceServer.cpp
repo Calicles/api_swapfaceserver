@@ -6,6 +6,7 @@
 #include <vector>    
 #include <fstream>
 #include <iostream>
+#include <sstream>
 
 
 #include "FaceSwapper.h"
@@ -29,7 +30,7 @@ SwapFaceServer::SwapFaceServer(utility::string_t url) : m_listener(url) {
 
 SwapFaceServer::~SwapFaceServer(){}
 
-void addHeaders(http_response &response) {
+void SwapFaceServer::addHeaders(http_response &response) {
     response.headers().add(U("Allow"), U("GET, POST, OPTIONS"));
     response.headers().add(U("Access-Control-Allow-Origin"), U("*"));
     response.headers().add(U("Access-Control-Allow-Methods"), U("GET, POST, OPTIONS"));
@@ -52,18 +53,20 @@ void SwapFaceServer::sendError(size_t error_code, string_t msg, http_request &me
     message.reply(response);
 }
 
-std::string getImageNameByIndex(string_t index) {
-    switch (index[0]) {
-        case '1':
+std::string SwapFaceServer::getImageNameByIndex(string_t indexStr) {
+    size_t index(0);
+    std::istringstream(indexStr) >> index;
+    switch (index) {
+        case 1:
             return BRAD;
 
-        case '2':
+        case 2:
             return TRUMP;
 
-        case '3':
+        case 3:
             return CLINTON;
 
-        case '4':
+        case 4:
             return WONDER_WOMAN;
     }
     return "";
@@ -127,7 +130,7 @@ void SwapFaceServer::handle_get(http_request message) {
 
 void SwapFaceServer::handle_post(http_request message) {
     message.extract_json()       
-        .then([=](json::value json)
+        .then([this, &message](json::value json)
         {
             std::vector<unsigned char> bytes;
 
@@ -147,8 +150,8 @@ void SwapFaceServer::handle_post(http_request message) {
                 FaceSwapper swapper(bytes, image2Name);
                 swapper.process_swap();
                 swapper.copyImgSwappedTo(bytes);
-                this->SendResponse(OK, bytes, message);
-            }catch (Exception e) {
+                this->sendResponse(bytes, message);
+            }catch (std::exception e) {
                 string_t msg(U("Intern error "));
                 msg.append(e.what());
                 this->sendError(INTERN_ERROR, msg, message);
