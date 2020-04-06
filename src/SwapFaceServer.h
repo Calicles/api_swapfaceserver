@@ -22,9 +22,7 @@
 class SwapFaceServer {
 private:
     void handle_get(web::http::http_request message);
-    void handle_put(web::http::http_request message);
     void handle_post(web::http::http_request message);
-    void handle_delete(web::http::http_request message);
     void handle_options(web::http::http_request message);
     void addHeaders(web::http::http_response &response);
     void sendResponse(const std::vector<unsigned char> &data, web::http::http_request &message);

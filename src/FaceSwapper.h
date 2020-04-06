@@ -14,7 +14,6 @@ private:
     void applyAffineTransform(cv::Mat &warpImage, cv::Mat &src, std::vector<cv::Point2f> &srcTri, std::vector<cv::Point2f> &dstTri);
     void warpTriangle(cv::Mat &img1, cv::Mat &img2, std::vector<cv::Point2f> &t1, std::vector<cv::Point2f> &t2);
     auto getLandMark(const std::string &imgFileName);
-    void initPredictor();
     static void calculateDelaunayTriangles(cv::Rect rect, std::vector<cv::Point2f> &points, std::vector< std::vector<int> > &delaunayTri);
 
 
@@ -32,11 +31,7 @@ public:
     bool loadImg2(const std::string &filename);
     bool process_swap();
     void writeImg(const std::string &imgFileName, const cv::Mat &img) const;
-    std::vector<unsigned char> toVector() const;
     void copyImgSwappedTo(std::vector<unsigned char> &dst);
-
-    std::string m_img1FileName;
-    std::string m_img2FileName;
 };
 
 #endif 
