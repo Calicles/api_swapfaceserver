@@ -5,8 +5,8 @@
 #include <iostream>
 
 #define BRAD "./bradPitt.jpg"
-#define TRUMP "./donaled_trump"
-#define CLINTON "./hillary_clinton.jpg"
+#define TRUMP "./donald_trump.jpg"
+#define THE_ROCK "./the_rock.jpg"
 #define WONDER_WOMAN "./wonder_woman.jpg"
 #define COUNT U("images_count")
 #define IMG_COUNT 4

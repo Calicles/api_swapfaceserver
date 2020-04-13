@@ -64,7 +64,7 @@ std::string SwapFaceServer::getImageNameByIndex(string_t indexStr) {
             return TRUMP;
 
         case 3:
-            return CLINTON;
+            return THE_ROCK;
 
         case 4:
             return WONDER_WOMAN;
