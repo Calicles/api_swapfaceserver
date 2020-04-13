@@ -32,6 +32,9 @@ public:
     bool process_swap();
     void writeImg(const std::string &imgFileName, const cv::Mat &img) const;
     void copyImgSwappedTo(std::vector<unsigned char> &dst);
+
+    std::string m_img1FileName;
+    std::string m_img2FileName;
 };
 
 #endif 

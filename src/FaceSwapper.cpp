@@ -80,11 +80,6 @@ void FaceSwapper::copyImgSwappedTo(std::vector<unsigned char> &dst) {
     imencode(".png", this->m_imgSwapped, dst);
 }
 
-std::vector<unsigned char> FaceSwapper::toVector() const  {
-    std::vector<unsigned char> res;
-    return res;
-}
-
 void FaceSwapper::applyAffineTransform(Mat &warpImage, Mat &src, vector<Point2f> &srcTri, vector<Point2f> &dstTri)
 {
     // Given a pair of triangles, find the affine transform.
