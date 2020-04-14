@@ -129,6 +129,7 @@ void SwapFaceServer::handle_get(http_request message) {
 }
 
 void SwapFaceServer::handle_post(http_request message) {
+    try {
     message.extract_json()       
         .then([this, &message](json::value json)
         {
@@ -137,8 +138,8 @@ void SwapFaceServer::handle_post(http_request message) {
             try{
                 //json::value v = json::value::parse(json);
                 json::array jsonArray = json[U("image")].as_array();
-                string_t image2Name = json[U("image2Name")].as_string();
-
+                string_t image2Index = json[U("image2Index")].as_string();
+                std::string image2Name = this->getImageNameByIndex(image2Index);
                 size_t size = jsonArray.size();
                 bytes.reserve(size);
                 size_t width(json[U("imageWidth")].as_integer());
@@ -152,11 +153,16 @@ void SwapFaceServer::handle_post(http_request message) {
                 swapper.copyImgSwappedTo(bytes);
                 this->sendResponse(bytes, message);
             }catch (std::exception e) {
+                ucout << U("error occured") << std::endl;
                 string_t msg(U("Intern error "));
                 msg.append(e.what());
                 this->sendError(INTERN_ERROR, msg, message);
             }
         }).wait();
+    }catch (std::exception e) {
+        ucout << U("error") << std::endl;
+    }
+ucout << U("message handled") << std::endl;
     return;
 }
 
