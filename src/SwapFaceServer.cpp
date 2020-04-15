@@ -130,9 +130,10 @@ void SwapFaceServer::handle_get(http_request message) {
 
 void SwapFaceServer::handle_post(http_request message) {
     try {
-    message.extract_json()       
+        message.extract_json(true)       
         .then([this, &message](json::value json)
-        {
+         {
+    ucout << U("in handle post") << std::endl;
             std::vector<unsigned char> bytes;
 
             try{
@@ -160,9 +161,9 @@ void SwapFaceServer::handle_post(http_request message) {
             }
         }).wait();
     }catch (std::exception e) {
-        ucout << U("error") << std::endl;
+        ucout << U("error  ") << e.what() << std::endl;
+        this->sendError(INTERN_ERROR, U("erreur de format du fichier json envoyé"), message);
     }
-ucout << U("message handled") << std::endl;
     return;
 }
 

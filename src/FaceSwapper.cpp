@@ -39,11 +39,11 @@ FaceSwapper::~FaceSwapper(){}
 bool FaceSwapper::loadImg1(const std::string &filename) {
     this->m_img1 = imread(filename, IMREAD_UNCHANGED);
     if (this->m_img1.empty()) {
-        std::cout << "error loading img1" << std::endl;
+        cout << "error loading img1" << endl;
         exit(1);
     } else
     {
-        std::cout << "img1 loaded" << std::endl;
+        cout << "img1 loaded" << std::endl;
     }
     return true;   
 }
@@ -51,11 +51,11 @@ bool FaceSwapper::loadImg1(const std::string &filename) {
 bool FaceSwapper::loadImg2(const std::string &filename) {
     this->m_img2 = imread(filename, IMREAD_UNCHANGED);
     if (this->m_img2.empty()) {
-        std::cout << "error loading img2" << std::endl;
+        std::cout << "error loading img2" << endl;
         exit(1);
     } else
     {
-        std::cout << "img2 loaded" << std::endl;
+        cout << "img2 loaded" << endl;
     }
     
     return true;
@@ -220,15 +220,3 @@ bool FaceSwapper::process_swap() {
 
     return true;
 }
-/*
-int main (int argc, char *arv[]) {
-    FaceSwapper swapper("./patLaf.jpg", "./donald_trump.jpg");
-
-    swapper.process_swap();
-
-    std::cout << "done" << std::endl;
-
-
-    return 0;
-}
-*/
