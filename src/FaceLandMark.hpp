@@ -33,6 +33,11 @@ class FaceLandMark {
 			std::vector<rectangle> dets = detector(img);
 			std::cout << "Number of faces detected: " << dets.size() << std::endl;
 
+			if (dets.size() == 0) {
+				std::string error("Visage non détécté");
+				throw error;
+			}
+
 			std::vector<cv::Point2f> ans;
 			for(size_t i = 0; i < dets.size(); ++i) {
 				full_object_detection shape = sp(img, dets[i]);

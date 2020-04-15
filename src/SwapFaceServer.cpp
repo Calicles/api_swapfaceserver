@@ -153,16 +153,19 @@ void SwapFaceServer::handle_post(http_request message) {
                 swapper.process_swap();
                 swapper.copyImgSwappedTo(bytes);
                 this->sendResponse(bytes, message);
-            }catch (std::exception e) {
+            }catch (std::exception &e) {
                 ucout << U("error occured") << std::endl;
                 string_t msg(U("Intern error "));
                 msg.append(e.what());
                 this->sendError(INTERN_ERROR, msg, message);
             }
         }).wait();
-    }catch (std::exception e) {
+    }catch (std::exception &e) {
         ucout << U("error  ") << e.what() << std::endl;
         this->sendError(INTERN_ERROR, U("erreur de format du fichier json envoyé"), message);
+    }catch (std::string &error) {
+        ucout << U("error ") << error << std::endl;
+        this->sendError(INTERN_ERROR, U(error), message);
     }
     return;
 }
