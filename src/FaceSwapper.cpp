@@ -13,16 +13,24 @@ using namespace std;
 using namespace cv;
 
 FaceSwapper::FaceSwapper(const std::vector<unsigned char> &img1, const std::string &fileNameImg2) 
-    : m_img1(img1, true), m_img2(imread(fileNameImg2)), m_img1FileName("user.jpg"), m_img2FileName(fileNameImg2)
+    : m_img2(imread(fileNameImg2)), m_img1FileName("user.jpg"), m_img2FileName(fileNameImg2)
 {
-    this->m_img1 = imdecode(this->m_img1, IMREAD_COLOR);
+    try {
+        m_img1 = Mat(img1, true);
+        this->m_img1 = imdecode(this->m_img1, IMREAD_COLOR);
+    }catch (std::exception &e) {
+        throw std::string("error reading user image");
+    }
+
     try {
         if (this->m_img1.empty()) {
             cout << "empty" << endl;
         }
-    writeImg(this->m_img1FileName, this->m_img1);
+        writeImg(this->m_img1FileName, this->m_img1);
     }catch (cv::Exception e) {
         cout << e.what() << endl;
+        std::string err(e.what());
+        throw err;
     }
     cout << "in constructor Faceswap" << endl;
 }

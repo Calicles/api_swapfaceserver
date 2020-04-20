@@ -6,7 +6,7 @@
 #include <vector>
 #include <string>
 
-#define DAT "./shape_predictor_68_face_landmarks.dat"
+#define DAT "/cv/libs/API_swapFace/build/shape_predictor_68_face_landmarks.dat"
 
 
 class FaceSwapper {

@@ -143,6 +143,7 @@ void SwapFaceServer::handle_post(http_request message) {
                 json::array jsonArray = json[U("image")].as_array();
                 string_t image2Index = json[U("image2Index")].as_string();
                 std::string image2Name = this->getImageNameByIndex(image2Index);
+                ucout << image2Name << std::endl;
                 size_t size = jsonArray.size();
                 bytes.reserve(size);
                 size_t width(json[U("imageWidth")].as_integer());
@@ -152,14 +153,20 @@ void SwapFaceServer::handle_post(http_request message) {
                     bytes.push_back(jsonArray[i].as_integer());
                 }
                 FaceSwapper swapper(bytes, image2Name);
+                ucout << U("after constructor") << std::endl;
                 swapper.process_swap();
+                ucout << U("after process") << std::endl;
                 swapper.copyImgSwappedTo(bytes);
+                ucout << U("after copy") << std::endl;
                 this->sendResponse(bytes, message);
             }catch (std::exception &e) {
                 ucout << U("error occured") << std::endl;
                 string_t msg(U("Intern error "));
                 msg.append(e.what());
                 this->sendError(INTERN_ERROR, msg, message);
+            }catch (std::string &error) {
+                ucout << error << std::endl;
+                this->sendError(INTERN_ERROR, U("error reading user photo"), message);
             }
         }).wait();
     }catch (std::exception &e) {
@@ -201,7 +208,7 @@ void on_shutdown() {
 
 int main (int argc, char *argv[]) {
     utility::string_t port= U("34568");
-    utility::string_t address = U("http://localhost:");
+    utility::string_t address = U("http://0.0.0.0:");
     address.append(port);
 
     on_initialize(address);
