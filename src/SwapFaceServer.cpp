@@ -81,6 +81,7 @@ std::string SwapFaceServer::getImageNameByIndex(string_t indexStr) {
   }
 
 void SwapFaceServer::handle_get(http_request message) {
+    ucout << message.to_string() << std::endl;
     std::vector<unsigned char> bytes;
     std::string filePath;
     std::vector<string_t> paths = web::uri::split_path(
@@ -129,6 +130,7 @@ void SwapFaceServer::handle_get(http_request message) {
 }
 
 void SwapFaceServer::handle_post(http_request message) {
+    ucout << message.to_string() << std::endl;
     try {
         message.extract_json(true)       
         .then([this, &message](json::value json)

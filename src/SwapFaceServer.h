@@ -4,10 +4,10 @@
 #include <cpprest/http_listener.h>              // HTTP server
 #include <iostream>
 
-#define BRAD "./bradPitt.jpg"
-#define TRUMP "./donald_trump.jpg"
-#define THE_ROCK "./the_rock.jpg"
-#define WONDER_WOMAN "./wonder_woman.jpg"
+#define BRAD "/cv/libs/API_swapFace/bradPitt.jpg"
+#define TRUMP "/cv/libs/API_swapFace/donald_trump.jpg"
+#define THE_ROCK "/cv/libs/API_swapFace/the_rock.jpg"
+#define WONDER_WOMAN "/cv/Libs/API_swapFace/wonder_woman.jpg"
 #define COUNT U("images_count")
 #define IMG_COUNT 4
 
