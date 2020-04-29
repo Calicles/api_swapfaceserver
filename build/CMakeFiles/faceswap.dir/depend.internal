@@ -733,7 +733,6 @@ CMakeFiles/faceswap.dir/src/SwapFaceServer.cpp.o
  /home/antoine/dev/c++Appli/rest/API_swapFace/src/FaceSwapper.h
  /home/antoine/dev/c++Appli/rest/API_swapFace/src/SwapFaceServer.cpp
  /home/antoine/dev/c++Appli/rest/API_swapFace/src/SwapFaceServer.h
- /home/antoine/dev/c++Appli/rest/API_swapFace/src/base64.h
  /usr/local/include/opencv4/opencv2/core/base.hpp
  /usr/local/include/opencv4/opencv2/core/bufferpool.hpp
  /usr/local/include/opencv4/opencv2/core/check.hpp
@@ -754,6 +753,3 @@ CMakeFiles/faceswap.dir/src/SwapFaceServer.cpp.o
  /usr/local/include/opencv4/opencv2/core/types.hpp
  /usr/local/include/opencv4/opencv2/core/vsx_utils.hpp
  /usr/local/include/opencv4/opencv2/opencv_modules.hpp
-CMakeFiles/faceswap.dir/src/base64.cpp.o
- /home/antoine/dev/c++Appli/rest/API_swapFace/src/base64.cpp
- /home/antoine/dev/c++Appli/rest/API_swapFace/src/base64.h

@@ -12,55 +12,79 @@
 using namespace std;
 using namespace cv;
 
+/**
+ * Constructor.
+ * 
+ * @param img1 a vector of bytes that contains an image
+ * @param fileNameImg2 the absolute path of the second image
+ */
 FaceSwapper::FaceSwapper(const std::vector<unsigned char> &img1, const std::string &fileNameImg2) 
     : m_img1(img1, true), m_img2(imread(fileNameImg2)), m_img1FileName("user.jpg"), m_img2FileName(fileNameImg2)
 {
-    this->m_img1 = imdecode(this->m_img1, IMREAD_COLOR);
+    try {
+        this->m_img1 = imdecode(this->m_img1, IMREAD_COLOR);
+    }catch (std::exception &e) {
+        throw std::string("error reading user image");
+    }
+
     try {
         if (this->m_img1.empty()) {
-            cout << "empty" << endl;
+            //cout << "empty" << endl;
+            throw std::string("empty img");
         }
-    writeImg(this->m_img1FileName, this->m_img1);
+        writeImg(this->m_img1FileName, this->m_img1);
     }catch (cv::Exception e) {
-        cout << e.what() << endl;
+        //cout << e.what() << endl;
+        std::string err(e.what());
+        throw err;
     }
-    cout << "in constructor Faceswap" << endl;
+    //cout << "in constructor Faceswap" << endl;
 }
 
+/**
+ * Constructor
+ * 
+ * @param img1FileName absolute path of the first image
+ * @param img2FileName absolute path of the second image
+ */
 FaceSwapper::FaceSwapper(const std::string &img1FileName, const std::string &img2FileName) 
     : m_img1FileName(img1FileName), m_img2FileName(img2FileName)
 {
-    loadImg1(img1FileName);
-    loadImg2(img2FileName);
+    loadImg(true, img1FileName);
+    loadImg(false, img2FileName);
 }
 
 FaceSwapper::~FaceSwapper(){}
 
-bool FaceSwapper::loadImg1(const std::string &filename) {
-    this->m_img1 = imread(filename, IMREAD_UNCHANGED);
-    if (this->m_img1.empty()) {
-        cout << "error loading img1" << endl;
-        exit(1);
-    } else
-    {
-        cout << "img1 loaded" << std::endl;
+/**
+ * Load an image as a Matrix by its file name.
+ * 
+ * @param isImage1 true for image 1 have to be loaded, false for the second
+ * @param the absolute file path
+ */
+bool FaceSwapper::loadImg(bool isImage1, const std::string &filename) {
+    if (isImage1 == 1) {
+        this->m_img1 = imread(filename, IMREAD_UNCHANGED);
+        if (this->m_img1.empty()) {
+            throw std::string("image 1 file path error");
+        }
+
+    }
+    else {
+        this->m_img2 = imread(filename, IMREAD_UNCHANGED);
+        if (this->m_img2.empty()) {
+            throw std::string("image 2 file path error");
+        }
     }
     return true;   
 }
 
-bool FaceSwapper::loadImg2(const std::string &filename) {
-    this->m_img2 = imread(filename, IMREAD_UNCHANGED);
-    if (this->m_img2.empty()) {
-        std::cout << "error loading img2" << endl;
-        exit(1);
-    } else
-    {
-        cout << "img2 loaded" << endl;
-    }
-    
-    return true;
-}
-
+/**
+ * Save the opencv Matrix as file.
+ * 
+ * @param imgFileName the name of the target file
+ * @param img the Matrix to save as an image file
+ */
 void FaceSwapper::writeImg(const std::string &imgFileName,const  Mat &img) const {
     std::vector<int> params(2);
     params.push_back(IMWRITE_JPEG_QUALITY);
@@ -68,18 +92,17 @@ void FaceSwapper::writeImg(const std::string &imgFileName,const  Mat &img) const
     imwrite(imgFileName, img, params);
 }
 
+/**
+ * Copy the Matrix of the image resulting from the swap
+ * as an one dimension array (vector).
+ * 
+ * @param dst the vector to copy in
+ */
 void FaceSwapper::copyImgSwappedTo(std::vector<unsigned char> &dst) {
-    //reserve the size of Mat in dst
-    /*if (this->m_imgSwapped.isContinuous()) {
-        dst.assign(this->m_imgSwapped.data, this->m_imgSwapped.data + this->m_imgSwapped.total());
-    } else {
-        for (int i = 0; i < this->m_imgSwapped.rows; i++) {
-            dst.insert(dst.end(), this->m_imgSwapped.ptr<unsigned char>(i), this->m_imgSwapped.ptr<unsigned char>(i) + this->m_imgSwapped.cols);
-        }
-    }*/
     imencode(".png", this->m_imgSwapped, dst);
 }
 
+// Apply affine transform calculated using srcTri and dstTri to src
 void FaceSwapper::applyAffineTransform(Mat &warpImage, Mat &src, vector<Point2f> &srcTri, vector<Point2f> &dstTri)
 {
     // Given a pair of triangles, find the affine transform.
@@ -160,10 +183,11 @@ void FaceSwapper::warpTriangle(Mat &img1, Mat &img2, vector<Point2f> &t1, vector
     multiply(img2Rect,mask, img2Rect);
     multiply(img2(r2), Scalar(1.0,1.0,1.0) - mask, img2(r2));
     img2(r2) = img2(r2) + img2Rect;
-    
-    
 }
 
+/**
+ * Process the face swapping from the two Matrix
+ */
 bool FaceSwapper::process_swap() {
     Mat img1Warped = this->m_img2.clone();
     fs::FaceLandMark detector(DAT);
@@ -171,7 +195,7 @@ bool FaceSwapper::process_swap() {
     std::vector<Point2f> points1, points2;
     points1 = detector.getLandMark(this->m_img1FileName);
     points2 = detector.getLandMark(this->m_img2FileName);
-    std::cout << "p1: " << points1.size() << " p2: " << points2.size() << std::endl;
+    //std::cout << "p1: " << points1.size() << " p2: " << points2.size() << std::endl;
 
     this->m_img1.convertTo(this->m_img1, CV_32F);
     img1Warped.convertTo(img1Warped, CV_32F);

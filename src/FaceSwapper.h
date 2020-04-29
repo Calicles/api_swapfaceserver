@@ -1,3 +1,9 @@
+/**
+ * This class is widely made from 
+ * github: https://github.com/guangyu-wang/image_face_swap.git
+ * 
+ */
+
 #ifndef FACE_SWAPPER_H
 #define FACE_SWAPPER_H
 
@@ -6,9 +12,15 @@
 #include <vector>
 #include <string>
 
-#define DAT "./shape_predictor_68_face_landmarks.dat"
+#define DAT "/cv/libs/API_swapFace/build/shape_predictor_68_face_landmarks.dat"
 
 
+/**
+ * Class of swapFace processing.
+ * Take two images from path or bytes vector,
+ * transform them to opencv Matrix
+ * and process the face swapping.
+ */
 class FaceSwapper {
 private:
     void applyAffineTransform(cv::Mat &warpImage, cv::Mat &src, std::vector<cv::Point2f> &srcTri, std::vector<cv::Point2f> &dstTri);
@@ -27,8 +39,7 @@ public:
     FaceSwapper(const std::string &img1Filename, const std::string &img2FileName);
     ~FaceSwapper();
 
-    bool loadImg1(const std::string &filename);
-    bool loadImg2(const std::string &filename);
+    bool loadImg(bool isImage1, const std::string &filename);
     bool process_swap();
     void writeImg(const std::string &imgFileName, const cv::Mat &img) const;
     void copyImgSwappedTo(std::vector<unsigned char> &dst);
